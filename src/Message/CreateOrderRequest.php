@@ -14,7 +14,11 @@ use Omnipay\WechatPay\Helper;
 class CreateOrderRequest extends BaseAbstractRequest
 {
 
-    protected $endpoint = 'https://api.mch.weixin.qq.com/pay/unifiedorder';
+    protected $endpoint;
+    protected $isSandboxMode = false;
+
+    const ENDPOINT_LIVE = 'https://api.mch.weixin.qq.com/pay/unifiedorder';
+    const ENDPOINT_SANDBOX = 'https://api.mch.weixin.qq.com/sandboxnew/pay/unifiedorder';
 
 
     /**
@@ -337,6 +341,15 @@ class CreateOrderRequest extends BaseAbstractRequest
         $this->setParameter('open_id', $openId);
     }
 
+    /**
+     * Enable/disable sandbox mode
+     *
+     * @param bool $bool
+     */
+    public function setSandboxMode($bool)
+    {
+        $this->isSandboxMode = $bool;
+    }
 
     /**
      * Send the request with specified data
@@ -347,6 +360,7 @@ class CreateOrderRequest extends BaseAbstractRequest
      */
     public function sendData($data)
     {
+        $this->endpoint = $this->isSandboxMode ? self::ENDPOINT_SANDBOX : self::ENDPOINT_LIVE;
         $request      = $this->httpClient->post($this->endpoint)->setBody(Helper::array2xml($data));
         $response     = $request->send()->getBody();
         $responseData = Helper::xml2array($response);
