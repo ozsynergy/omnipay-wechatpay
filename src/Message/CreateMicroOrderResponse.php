@@ -57,4 +57,21 @@ class CreateMicroOrderResponse extends BaseAbstractResponse
             return null;
         }
     }
+
+    /**
+     * Support both NATIVE and MWEB(H5) Urls transparently
+     * @return string
+     */
+    public function getUrl()
+    {
+        if ($this->isSuccessful() && $this->request->getTradeType() == 'NATIVE') {
+            return $this->getData()['code_url'];
+        }
+
+        if ($this->isSuccessful() && $this->request->getTradeType() == 'MWEB') {
+            return $this->getData()['mweb_url'];
+        }
+
+        return null;
+    }
 }
